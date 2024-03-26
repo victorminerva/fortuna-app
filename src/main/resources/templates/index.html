@@ -32,11 +32,9 @@
             <button type="submit" class="btn btn-primary">Analisar</button>
         </div>
     </form>
-    <p>
-        <span th:text="List of products"></span>
-    </p>
 
-    <div th:if="${not #lists.isEmpty(products)}">
+
+    <div>
         <table class="table">
             <thead>
             <tr>
@@ -45,9 +43,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="product : ${products}">
-                <td th:text="${product.vendor}"></td>
-                <td th:text="${product.name}"></td>
+            <tr>
+                <td ></td>
+                <td ></td>
             </tr>
             </tbody>
         </table>
