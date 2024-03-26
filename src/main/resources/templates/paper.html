@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fortuna</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div class="container my-5">
+    <h1>Folha</h1>
+
+    <form th:action="@{/submit}" method="post">
+        <div id="inputsContainer">
+            <!-- Initial input field -->
+            <div class="input-group mb-3">
+                <input type="number" name="numbers[]" class="form-control" placeholder="01 - 02 - 03 - 04 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 12 - 13 - 14 - 15">
+                <div class="input-group-append">
+                    <button class="btn btn-danger delete-input" type="button">-</button>
+                </div>
+            </div>
+        </div>
+        <button type="button" id="addInput" class="btn btn-primary">+</button>
+        <div class="text-right">
+            <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            $('#addInput').click(function() {
+                var newInput = '<div class="input-group mb-3">' +
+                               '<input type="number" name="numbers[]" class="form-control" placeholder="01 - 02 - 03 - 04 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 12 - 13 - 14 - 15">' +
+                               '<div class="input-group-append">' +
+                               '<button class="btn btn-danger delete-input" type="button">-</button>' +
+                               '</div>' +
+                               '</div>';
+                $('#inputsContainer').append(newInput);
+            });
+
+            $(document).on('click', '.delete-input', function() {
+                $(this).closest('.input-group').remove();
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
