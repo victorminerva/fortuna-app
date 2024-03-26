@@ -20,13 +20,13 @@
         <div class="form-group row">
             <label for="sequence" class="col-sm-2 col-form-label">Concurso nª:</label>
             <div class="col-sm-2">
-                <input type="text" name="searchTerm" class="form-control" id="sequence" placeholder="ex: 3091">
+                <input type="text" name="sequence" class="form-control" id="sequence" placeholder="ex: 3091">
             </div>
         </div>
         <div class="form-group row">
-            <label for="winingNumbers" class="col-sm-2 col-form-label">Números Sorteados:</label>
+            <label for="winningNumbers" class="col-sm-2 col-form-label">Números Sorteados:</label>
             <div class="col-sm-10">
-                <input type="text" id = "maskedInput" name="searchTerm" class="form-control" id="winingNumbers" placeholder="01 - 02 - 03 - 04 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 12 - 13 - 14 - 15">
+                <input type="text" name="winningNumbers" class="form-control" id="winningNumbers" placeholder="01 - 02 - 03 - 04 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 12 - 13 - 14 - 15">
             </div>
         </div>
         <div class="text-right">
@@ -54,7 +54,7 @@
 </div>
 
 <script>
-    $('#maskedInput').on('input', function() {
+    $('#winningNumbers').on('input', function() {
         var input = $(this);
         var value = input.val().replace(/[^0-9]/g, ''); // Remove non-numeric characters
         var pairs = value.match(/.{1,2}/g) || []; // Split into pairs of characters
