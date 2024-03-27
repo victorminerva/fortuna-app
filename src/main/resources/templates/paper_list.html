@@ -16,6 +16,11 @@
     <header class="container my-5">
         <h1 class="text-left">Lista de Folhas</h1>
     </header>
+    <div class="text-right">
+        <a href="/" class="btn btn-secondary">Voltar p/ Inicio</a>
+
+        <a href="/paper" class="btn btn-success">Nova folha</a>
+    </div>
     <main class="container my-5" id="cardsContainer"></main>
 
     <div id="loadingOverlay" style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background: rgba(0,0,0,0.5); z-index: 9999;">
@@ -25,12 +30,10 @@
     </div>
 
     <script>
-        $(document).ready(function() {
-            $.ajax({
-                type: 'GET',
-                url: '/api/papers',
-                dataType: 'json',
-                success: function(data) {
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/papers')
+                .then(response => response.json())
+                .then(data => {
                     $('#loadingOverlay').hide();
 
                     var cardRow = $('<div class="row"></div>');
@@ -59,11 +62,8 @@
                         card.find(".card-text").toggle();
                         card.find(".additional-info").toggleClass("d-none");
                     });
-                },
-                error: function(error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
+                })
+                .catch(error => console.error('Error fetching data:', error));
         });
     </script>
 
