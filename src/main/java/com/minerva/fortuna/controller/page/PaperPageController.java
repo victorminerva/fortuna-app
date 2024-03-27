@@ -11,4 +11,8 @@ public class PaperPageController {
     public String paper(Model model) {
         return "paper";
     }
+    @GetMapping("/paper-list")
+    public String paperList(Model model) {
+        return "paper_list";
+    }
 }
