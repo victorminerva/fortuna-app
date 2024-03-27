@@ -12,7 +12,7 @@
 <div class="container my-5">
     <h1>Folha</h1>
 
-    <form th:action="@{/submit}" method="post">
+    <form id="submitForm" method="post">
         <div id="inputsContainer">
             <!-- Initial input field -->
             <div class="input-group mb-3">
@@ -24,7 +24,7 @@
         </div>
         <button type="button" id="addInput" class="btn btn-primary">+</button>
         <div class="text-right">
-            <button type="submit" class="btn btn-primary">Salvar</button>
+            <button type="button" id="submitBtn" class="btn btn-primary">Salvar</button>
         </div>
     </form>
 
@@ -52,6 +52,32 @@
                     pairs = pairs.slice(0, 15);
                 }
                 input.val(pairs.join(' - '));
+            });
+
+            $('#submitBtn').click(function() {
+                var formData = $('#submitForm').serialize();
+                const params = new URLSearchParams(formData);
+                const numbersValues = params.getAll('numbers');
+
+                let jsonObject = {
+                    "bets": numbersValues.map(number => ({
+                        "numbers": number.split(' - ').map(number => parseInt(number, 10))
+                    }))
+                };
+
+                console.log(jsonObject)
+                fetch('http://localhost:8080/api/papers', {
+                     method: 'POST',
+                     headers: {
+                        'Content-Type': 'application/json',
+                     },
+                     body: JSON.stringify(jsonObject),
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log(data))
+                    .catch((error) => {
+                     console.error('Error:', error);
+                });
             });
         });
     </script>
