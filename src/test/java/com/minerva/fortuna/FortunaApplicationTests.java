@@ -16,7 +16,6 @@ class FortunaApplicationTests {
     void name() {
         ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 8, 10, 11, 12, 16, 18, 19, 21, 24, 25));
 
-
         Map<Integer, Integer> jumpCounts = new HashMap<>();
         for (int i = 1; i < numbers.size(); i++) {
             int jump = Math.abs(numbers.get(i) - numbers.get(i - 1));
