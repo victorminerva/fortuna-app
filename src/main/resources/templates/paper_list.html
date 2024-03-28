@@ -9,7 +9,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
 </head>
 <body>
 <div class="container my-5">
@@ -18,57 +17,48 @@
     </header>
     <div class="text-right">
         <a href="/" class="btn btn-secondary">Voltar p/ Inicio</a>
-
         <a href="/paper" class="btn btn-success">Nova folha</a>
     </div>
-    <main class="container my-5" id="cardsContainer"></main>
-
-    <div id="loadingOverlay" style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background: rgba(0,0,0,0.5); z-index: 9999;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <img src="/images/loading_fortuna.gif" alt="Loading...">
+    <main class="container my-5" id="cardsContainer">
+        <div id="accordion">
+            <!-- Accordion items will be dynamically added here -->
         </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('/api/papers')
-                .then(response => response.json())
-                .then(data => {
-                    $('#loadingOverlay').hide();
-
-                    var cardRow = $('<div class="row"></div>');
-                    $('#cardsContainer').append(cardRow);
-
-                    $.each(data, function(index, item) {
-                        var sequenceNumber = 0;
-                        var cardCol = $('<div class="col-md-12 col-sm-6 mb-4"></div>');
-                        var card = $('<div class="card h-100"></div>');
-                        var cardBody = $('<div class="card-body"></div>');
-                        var cardTitle = $('<h5 class="card-title">Folha ' + item.id + '</h5>');
-                        var cardText = $('<p class="card-text">Clique para ver mais informações.</p>');
-                        var additionalInfo = $('<div class="additional-info d-none"></div>');
-
-                        $.each(item.bets, function(betIndex, bet) {
-                            sequenceNumber = ++sequenceNumber;
-                            additionalInfo.append('<p>Aposta ' + sequenceNumber + ': ' + bet.numbers.join(', ') + '</p>');
-                        });
-
-                        cardBody.append(cardTitle, cardText, additionalInfo);
-                        card.append(cardBody);
-                        cardCol.append(card);
-                        cardRow.append(cardCol);
-                    });
-
-                     $('#cardsContainer').on('click', '.card', function() {
-                        var card = $(this);
-                        card.find(".card-text").toggle();
-                        card.find(".additional-info").toggleClass("d-none");
-                    });
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        });
-    </script>
-
+    </main>
+    <!-- Your existing loading overlay code -->
 </div>
+<script>
+    $(document).on('click', '.btn-link', function(e) {
+        e.preventDefault();
+        var target = $(this).attr('data-target');
+        $(target).collapse('toggle');
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/api/papers')
+            .then(response => response.json())
+            .then(data => {
+                $('#loadingOverlay').hide();
+
+                var accordionContainer = $('#accordion');
+                $.each(data, function(index, item) {
+                    var accordionItem = $('<div class="card"></div>');
+                    var cardHeader = $('<div class="card-header" id="heading' + item.id + '"></div>');
+                    var cardHeaderButton = $('<button class="btn btn-link" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Folha ' + item.id + '</button>');
+                    var cardBody = $('<div id="collapse' + item.id + '" class="collapse" aria-labelledby="heading' + item.id + '" data-parent="#accordion"></div>');
+                    var cardBodyContent = $('<div class="card-body"></div>');
+
+                    $.each(item.bets, function(betIndex, bet) {
+                        cardBodyContent.append('<p>Aposta ' + (betIndex + 1) + ': ' + bet.numbers.join(', ') + '</p>');
+                    });
+
+                    cardBody.append(cardBodyContent);
+                    cardHeader.append(cardHeaderButton);
+                    accordionItem.append(cardHeader, cardBody);
+                    accordionContainer.append(accordionItem);
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    });
+</script>
 </body>
 </html>
