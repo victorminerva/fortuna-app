@@ -20,7 +20,7 @@
     </div>
 
     <!-- Input text field -->
-    <form th:action="@{/search}" method="post" class="mb-3">
+    <form id="analyzeForm" method="post" class="mb-3">
         <div class="form-group row">
             <label for="sequence" class="col-sm-2 col-form-label">Concurso nª:</label>
             <div class="col-sm-2">
@@ -34,24 +34,20 @@
             </div>
         </div>
         <div class="text-right">
-            <button type="submit" class="btn btn-primary">Analisar</button>
+            <button type="button" id="analyzeBtn" class="btn btn-primary">Analisar</button>
         </div>
     </form>
 
 
     <div>
-        <table class="table">
+        <table id="betsTable" class="table">
             <thead>
             <tr>
                 <th>Folha</th>
-                <th>Coluna 2</th>
+                <th>Números</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td ></td>
-                <td ></td>
-            </tr>
             </tbody>
         </table>
     </div>
@@ -60,13 +56,65 @@
 <script>
     $('#winningNumbers').on('input', function() {
         var input = $(this);
-        var value = input.val().replace(/[^0-9]/g, ''); // Remove non-numeric characters
-        var pairs = value.match(/.{1,2}/g) || []; // Split into pairs of characters
+        var value = input.val().replace(/[^0-9]/g, '');
+        var pairs = value.match(/.{1,2}/g) || [];
         if (pairs.length > 15) {
-            pairs = pairs.slice(0, 15); // Limit to 15 pairs
+            pairs = pairs.slice(0, 15);
         }
-        input.val(pairs.join(' - ')); // Join pairs with dashes and spaces
+        input.val(pairs.join(' - '));
     });
+
+    function clearTableBody() {
+        const tableBody = document.querySelector('#betsTable tbody');
+        tableBody.innerHTML = "";
+    }
+
+    $('#analyzeBtn').click(function() {
+        clearTableBody();
+
+        var formData = $('#analyzeForm').serialize();
+        const params = new URLSearchParams(formData);
+        const numbersValues = params.getAll('winningNumbers');
+
+        var payload = numbersValues[0].split(' - ').map(Number);
+        console.log(payload);
+
+        fetch('/api/analyze', {
+             method: 'POST',
+             headers: {
+                'Content-Type': 'application/json',
+             },
+             body: JSON.stringify(payload),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.querySelector('#betsTable tbody');
+                data.forEach(betContainer => {
+                    betContainer.bets.forEach(bet => {
+                        const row = document.createElement('tr');
+                        const idCell = document.createElement('td');
+                        idCell.textContent = betContainer.id;
+                        row.appendChild(idCell);
+
+                        const numbersCell = document.createElement('td');
+                        numbersCell.textContent = bet.numbers.join(' - ');
+                        row.appendChild(numbersCell);
+
+                        tableBody.appendChild(row);
+                    });
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+
 </script>
 
 </body>
