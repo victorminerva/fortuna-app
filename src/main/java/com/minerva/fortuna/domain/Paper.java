@@ -14,6 +14,9 @@ public class Paper {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bet> bets;
 
+    @Transient
+    private Integer correctGuesses;
+
     public Integer getId() {
         return id;
     }
@@ -28,5 +31,13 @@ public class Paper {
 
     public void setBets(List<Bet> bets) {
         this.bets = bets;
+    }
+
+    public Integer getCorrectGuesses() {
+        return correctGuesses;
+    }
+
+    public void setCorrectGuesses(Integer correctGuesses) {
+        this.correctGuesses = correctGuesses;
     }
 }

@@ -2,6 +2,7 @@ package com.minerva.fortuna.service;
 
 import com.minerva.fortuna.domain.Bet;
 import com.minerva.fortuna.domain.Paper;
+import com.minerva.fortuna.domain.PaperDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,7 +30,12 @@ public class MainService {
                 List<Integer> intersection = new ArrayList<>(bet.getNumbers());
                 intersection.retainAll(winningNumbers);
                 if (intersection.size() > 10) {
-                    papers.add(paper);
+                    Paper result = new Paper();
+                    result.setId(paper.getId());
+                    result.setBets(new ArrayList<>());
+                    result.setCorrectGuesses(intersection.size());
+                    result.getBets().add(bet);
+                    papers.add(result);
                 }
             }
         }

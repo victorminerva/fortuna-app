@@ -45,6 +45,7 @@
             <tr>
                 <th>Folha</th>
                 <th>Números</th>
+                <th>Quantidade de acertos</th>
             </tr>
             </thead>
             <tbody>
@@ -93,8 +94,10 @@
                 return response.json();
             })
             .then(data => {
+                console.log('Data: ' + data)
                 const tableBody = document.querySelector('#betsTable tbody');
                 data.forEach(betContainer => {
+                    console.log(betContainer)
                     betContainer.bets.forEach(bet => {
                         const row = document.createElement('tr');
                         const idCell = document.createElement('td');
@@ -102,8 +105,17 @@
                         row.appendChild(idCell);
 
                         const numbersCell = document.createElement('td');
-                        numbersCell.textContent = bet.numbers.join(' - ');
+                        // Modify this part to make numbers bold if they match winning numbers
+                        const numbersText = bet.numbers.map(number => {
+                            console.log('payload: '+payload);
+                            return payload.includes(number) ? `<b>${number}</b>` : number;
+                        }).join(' - ');
+                        numbersCell.innerHTML = numbersText; // Use innerHTML to render HTML tags
                         row.appendChild(numbersCell);
+
+                        const correctGuesses = document.createElement('td');
+                        correctGuesses.textContent = betContainer.correctGuesses;
+                        row.appendChild(correctGuesses);
 
                         tableBody.appendChild(row);
                     });
