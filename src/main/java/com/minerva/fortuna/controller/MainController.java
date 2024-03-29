@@ -1,6 +1,7 @@
 package com.minerva.fortuna.controller;
 
 import com.minerva.fortuna.domain.Paper;
+import com.minerva.fortuna.domain.PaperDTO;
 import com.minerva.fortuna.service.MainService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

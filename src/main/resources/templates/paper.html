@@ -72,7 +72,27 @@
                 input.val(pairs.join(' - '));
             });
 
-            $('#submitBtn').click(function() {
+            $('#submitBtn').click(function(e) {
+                // Prevent form submission by default
+                e.preventDefault();
+
+                // Check if all inputs have at least 15 numbers
+                let allValid = true;
+                $('#inputsContainer input[type="text"]').each(function() {
+                    const value = $(this).val().replace(/[^0-9]/g, '');
+                    if (value.length < 15) {
+                        allValid = false;
+                        return false; // Break the loop
+                    }
+                });
+
+                if (!allValid) {
+                    // Display an error message if not all inputs are valid
+                    $('#errorMessage').text('Cada aposta deve ter 15 números.').show().fadeOut(5000);
+                    return;
+                }
+
+
                 $('#loadingOverlay').show();
 
                 var formData = $('#submitForm').serialize();

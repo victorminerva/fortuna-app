@@ -28,5 +28,7 @@ public class PaperService {
     }
 
     @CacheEvict(value = "PAPERS", allEntries=true)
-    public void delete(Long id) { repository.deleteById(id); }
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
 }
