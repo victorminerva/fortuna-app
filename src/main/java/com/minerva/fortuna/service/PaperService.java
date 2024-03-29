@@ -26,4 +26,7 @@ public class PaperService {
     public Paper create(final Paper paper) {
         return repository.save(paper);
     }
+
+    @CacheEvict(value = "PAPERS", allEntries=true)
+    public void delete(Long id) { repository.deleteById(id); }
 }
