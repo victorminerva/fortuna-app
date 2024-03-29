@@ -44,6 +44,7 @@
                     var accordionItem = $('<div class="card"></div>');
                     var cardHeader = $('<div class="card-header" id="heading' + item.id + '"></div>');
                     var cardHeaderButton = $('<button class="btn btn-link" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Folha ' + item.id + '</button>');
+                    var deleteButton = $('<button class="btn btn-danger btn-sm float-right delete-btn" data-id="' + item.id + '">Delete</button>');
                     var cardBody = $('<div id="collapse' + item.id + '" class="collapse" aria-labelledby="heading' + item.id + '" data-parent="#accordion"></div>');
                     var cardBodyContent = $('<div class="card-body"></div>');
 
@@ -52,13 +53,45 @@
                     });
 
                     cardBody.append(cardBodyContent);
-                    cardHeader.append(cardHeaderButton);
+                    cardHeader.append(cardHeaderButton, deleteButton);
                     accordionItem.append(cardHeader, cardBody);
                     accordionContainer.append(accordionItem);
+                });
+
+                // Attach click event listener to delete buttons
+                $('.delete-btn').click(function() {
+                    var itemId = $(this).data('id');
+                    var itemUrl = '/api/papers/' + itemId;
+
+                    var confirmDelete = window.confirm("Tem certeza que deseja deletar este item?");
+
+                    if(confirmDelete) {
+                        fetch(itemUrl, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                // Assuming the server responds with a success message or status code
+                                console.log('Item deleted successfully');
+                                // Remove the deleted item from the UI
+                                $('#heading' + itemId).parent().remove();
+                            })
+                            .catch(error => {
+                                console.error('Error deleting item:', error);
+                            });
+                    }else {
+                        return false;
+                    }
                 });
             })
             .catch(error => console.error('Error fetching data:', error));
     });
+</script>
 </script>
 </body>
 </html>

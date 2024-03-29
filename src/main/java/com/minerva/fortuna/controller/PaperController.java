@@ -26,5 +26,9 @@ public class PaperController {
         return service.create(paper);
     }
 
-
+    @DeleteMapping("/{id}")
+    public String deletePaper(@PathVariable("id") Long id) {
+        service.delete(id);
+        return "redirect:/paper-list"; // Redirect to a page showing all papers
+    }
 }
