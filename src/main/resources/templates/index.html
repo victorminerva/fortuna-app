@@ -38,14 +38,17 @@
         </div>
     </form>
 
+    <div class="alert alert-info info-section" role="alert" style="display: none;">
+
+    </div>
 
     <div>
         <table id="betsTable" class="table">
             <thead>
             <tr>
                 <th>Folha</th>
-                <th>Números</th>
-                <th>Quantidade de acertos</th>
+                <th>Apostas</th>
+                <th>Acertos</th>
             </tr>
             </thead>
             <tbody>
@@ -72,62 +75,90 @@
 
     $('#analyzeBtn').click(function() {
         clearTableBody();
+        $('.info-section').show();
 
         var formData = $('#analyzeForm').serialize();
         const params = new URLSearchParams(formData);
         const numbersValues = params.getAll('winningNumbers');
 
         var payload = numbersValues[0].split(' - ').map(Number);
-        console.log(payload);
 
-        fetch('/api/analyze', {
-             method: 'POST',
-             headers: {
+        fetch('/api/analyzeJumps', {
+            method: 'POST',
+            headers: {
                 'Content-Type': 'application/json',
-             },
-             body: JSON.stringify(payload),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+            },
+            body: JSON.stringify(payload),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(dataJumps => {
+            const infoSection = document.querySelector('.info-section');
+            infoSection.innerHTML = '';
+            if (Object.keys(dataJumps).length === 0) {
+                infoSection.textContent = 'Não houveram pulos maiores ou iguais a 3.';
+            } else {
+                for (const key in dataJumps) {
+                    if (dataJumps.hasOwnProperty(key)) {
+                        const div = document.createElement('div');
+                        div.textContent = `${dataJumps[key]} pulo(s) de ${key}`;
+
+                        infoSection.appendChild(div);
+                    }
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Data: ' + data)
-                const tableBody = document.querySelector('#betsTable tbody');
-                data.forEach(betContainer => {
-                    console.log(betContainer)
-                    betContainer.bets.forEach(bet => {
-                        const row = document.createElement('tr');
-                        const idCell = document.createElement('td');
-                        idCell.textContent = betContainer.id;
-                        row.appendChild(idCell);
+            }
 
-                        const numbersCell = document.createElement('td');
-                        // Modify this part to make numbers bold if they match winning numbers
-                        const numbersText = bet.numbers.map(number => {
-                            console.log('payload: '+payload);
-                            return payload.includes(number) ? `<b>${number}</b>` : number;
-                        }).join(' - ');
-                        numbersCell.innerHTML = numbersText; // Use innerHTML to render HTML tags
-                        row.appendChild(numbersCell);
+            fetch('/api/analyze', {
+                 method: 'POST',
+                 headers: {
+                    'Content-Type': 'application/json',
+                 },
+                 body: JSON.stringify(payload),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data: ' + data)
+                    const tableBody = document.querySelector('#betsTable tbody');
+                    data.forEach(betContainer => {
+                        console.log(betContainer)
+                        betContainer.bets.forEach(bet => {
+                            const row = document.createElement('tr');
+                            const idCell = document.createElement('td');
+                            idCell.textContent = betContainer.id;
+                            row.appendChild(idCell);
 
-                        const correctGuesses = document.createElement('td');
-                        correctGuesses.textContent = betContainer.correctGuesses;
-                        row.appendChild(correctGuesses);
+                            const numbersCell = document.createElement('td');
+                            // Modify this part to make numbers bold if they match winning numbers
+                            const numbersText = bet.numbers.map(number => {
+                                console.log('payload: '+payload);
+                                return payload.includes(number) ? `<b>${number}</b>` : number;
+                            }).join(' - ');
+                            numbersCell.innerHTML = numbersText; // Use innerHTML to render HTML tags
+                            row.appendChild(numbersCell);
 
-                        tableBody.appendChild(row);
+                            const correctGuesses = document.createElement('td');
+                            correctGuesses.textContent = betContainer.correctGuesses;
+                            row.appendChild(correctGuesses);
+
+                            tableBody.appendChild(row);
+                        });
                     });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
                 });
-            })
-            .catch((error) => {
-                console.error('Error:', error);
             });
-    });
-
-
-</script>
+        });
+    </script>
 
 </body>
 </html>

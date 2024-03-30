@@ -2,14 +2,9 @@ package com.minerva.fortuna.service;
 
 import com.minerva.fortuna.domain.Bet;
 import com.minerva.fortuna.domain.Paper;
-import com.minerva.fortuna.domain.PaperDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 public class MainService {
@@ -49,5 +44,16 @@ public class MainService {
 //                            return betNumbersSet.size() > 10; // Check if the intersection size is greater than 10
 //                        }))
 //                .collect(Collectors.toList());
+    }
+
+    public Map<Integer, Integer> analyzeJumps(List<Integer> winningNumbers) {
+        Map<Integer, Integer> jumpCounts = new HashMap<>();
+        for (int i = 1; i < winningNumbers.size(); i++) {
+            int jump = Math.abs(winningNumbers.get(i) - winningNumbers.get(i - 1));
+            if (jump > 2 && jump < 9) {
+                jumpCounts.put(jump, jumpCounts.getOrDefault(jump, 0) + 1);
+            }
+        }
+        return jumpCounts;
     }
 }

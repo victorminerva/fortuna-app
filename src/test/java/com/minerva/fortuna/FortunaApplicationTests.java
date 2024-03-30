@@ -8,13 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 class FortunaApplicationTests {
 
     @Test
     void name() {
-        ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 8, 10, 11, 12, 16, 18, 19, 21, 24, 25));
+        ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 8, 9, 10, 12, 13, 14, 15, 17, 18, 24, 25));
 
         Map<Integer, Integer> jumpCounts = new HashMap<>();
         for (int i = 1; i < numbers.size(); i++) {
@@ -23,7 +24,18 @@ class FortunaApplicationTests {
                 jumpCounts.put(jump, jumpCounts.getOrDefault(jump, 0) + 1);
             }
         }
-        System.out.println(jumpCounts);
+
+        Map<Integer, Integer> reversedJumpCounts = new HashMap<>();
+        for (Map.Entry<Integer, Integer> entry : jumpCounts.entrySet()) {
+            reversedJumpCounts.put(entry.getValue(), entry.getKey());
+        }
+        //01 - 02 - 03 - 04 - 05 - 08 - 10 - 11 - 12 - 16 - 18 - 19 - 21 - 24 - 25
+        //TODO: Dr Audizio
+        //01 - 03 - 04 - 05 - 07 - 08 - 09 - 10 - 11 - 17 - 19 - 21 - 22 - 24 - 25
+        //01 - 02 - 03 - 04 - 08 - 09 - 10 - 12 - 13 - 14 - 15 - 17 - 18 - 24 - 25
+        //02 - 03 - 06 - 08 - 09 - 12 - 13 - 16 - 17 - 18 - 19 - 20 - 21 - 22 - 24
+
+        System.out.println(reversedJumpCounts);
 
 //        ArrayList<Integer> winningNumbers = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 8, 10, 11, 12, 16, 18, 19, 21, 24, 25));
 //
