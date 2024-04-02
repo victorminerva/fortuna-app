@@ -5,6 +5,7 @@ import com.minerva.fortuna.domain.Paper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MainService {
@@ -16,34 +17,21 @@ public class MainService {
     }
 
     public List<Paper> analyze(List<Integer> winningNumbers) {
-        List<Paper> allPapers = paperService.findAll();
-        List<Paper> papers = new ArrayList<>();
-
-        for (Paper paper : allPapers) {
-            List<Bet> bets = paper.getBets();
-            for (Bet bet : bets) {
-                List<Integer> intersection = new ArrayList<>(bet.getNumbers());
-                intersection.retainAll(winningNumbers);
-                if (intersection.size() > 10) {
-                    Paper result = new Paper();
-                    result.setId(paper.getId());
-                    result.setBets(new ArrayList<>());
-                    result.setCorrectGuesses(intersection.size());
-                    result.getBets().add(bet);
-                    papers.add(result);
-                }
-            }
-        }
-        return papers;
-
-//        return allPapers.stream()
-//                .filter(paper -> paper.getBets().stream()
-//                        .anyMatch(bet -> {
-//                            Set<Integer> betNumbersSet = new HashSet<>(bet.getNumbers()); // Convert bet numbers to a set
-//                            betNumbersSet.retainAll(winningNumbers); // Use retainAll on sets
-//                            return betNumbersSet.size() > 10; // Check if the intersection size is greater than 10
-//                        }))
-//                .collect(Collectors.toList());
+        return paperService.findAll().stream()
+                .flatMap(paper -> paper.getBets().stream()
+                        .filter(bet -> bet.getNumbers().stream()
+                                .filter(winningNumbers::contains)
+                                .count() > 10)
+                        .map(bet -> {
+                            Paper result = new Paper();
+                            result.setId(paper.getId());
+                            result.setBets(List.of(bet));
+                            result.setCorrectGuesses((int) bet.getNumbers().stream()
+                                    .filter(winningNumbers::contains)
+                                    .count());
+                            return result;
+                        }))
+                .collect(Collectors.toList());
     }
 
     public Map<Integer, Integer> analyzeJumps(List<Integer> winningNumbers) {

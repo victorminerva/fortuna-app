@@ -37,6 +37,23 @@
             <div class="col-sm-10">
                 <input type="text" name="winningNumbers" class="form-control" id="winningNumbers" placeholder="01 - 02 - 03 - 04 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 12 - 13 - 14 - 15">
             </div>
+<!--            <div id="groupCount" class="parent-container" style="display: flex; justify-content: flex-end; gap: 20px; font-family: Arial, sans-serif; margin-left: 40%;">-->
+<!--                <div class="counts-display">-->
+<!--                    <span id="count1" style="font-weight: bold; margin-left: 5px;"></span>-->
+<!--                </div>-->
+<!--                <div class="hifen-display">-->
+<!--                    <span> - </span>-->
+<!--                </div>-->
+<!--                <div class="counts-display">-->
+<!--                    <span id="count2" style="font-weight: bold; margin-left: 5px;"></span>-->
+<!--                </div>-->
+<!--                <div class="hifen-display">-->
+<!--                    <span> - </span>-->
+<!--                </div>-->
+<!--                <div class="counts-display">-->
+<!--                    <span id="count3" style="font-weight: bold; margin-left: 5px;"></span>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
         <div class="text-right">
             <button type="button" id="analyzeBtn" class="btn btn-primary">Analisar</button>
@@ -62,134 +79,187 @@
     </div>
 </div>
 
-    <script>
-        $('#winningNumbers').on('input', function() {
-            var input = $(this);
-            var value = input.val().replace(/[^0-9]/g, '');
-            var pairs = value.match(/.{1,2}/g) || [];
-            if (pairs.length > 15) {
-                pairs = pairs.slice(0, 15);
+<script>
+    $('#winningNumbers').on('input', function() {
+        var input = $(this);
+        var value = input.val().replace(/[^0-9]/g, '');
+        var pairs = value.match(/.{1,2}/g) || [];
+        if (pairs.length > 15) {
+            pairs = pairs.slice(0, 15);
+        }
+        input.val(pairs.join(' - '));
+    });
+
+    function clearTableBody() {
+        const tableBody = document.querySelector('#betsTable tbody');
+        tableBody.innerHTML = "";
+    }
+
+    function countNumbersInGroups(numbers) {
+        const counts = [0, 0, 0];
+
+        numbers.forEach(number => {
+            if (number >= 1 && number <= 8) {
+                counts[0]++;
+            } else if (number >= 9 && number <= 17) {
+                counts[1]++;
+            } else if (number >= 18 && number <= 25) {
+                counts[2]++;
             }
-            input.val(pairs.join(' - '));
         });
 
-        function clearTableBody() {
-            const tableBody = document.querySelector('#betsTable tbody');
-            tableBody.innerHTML = "";
-        }
+        return counts;
+    }
 
-        $('#analyzeBtn').click(function() {
-            clearTableBody();
-            $('.info-section').show();
+    $('#analyzeBtn').click(function() {
+        clearTableBody();
+        $('.info-section').show();
+<!--        $('#groupCount').show();-->
 
-            var formData = $('#analyzeForm').serialize();
-            const params = new URLSearchParams(formData);
-            const numbersValues = params.getAll('winningNumbers');
+        var formData = $('#analyzeForm').serialize();
+        const params = new URLSearchParams(formData);
+        const numbersValues = params.getAll('winningNumbers');
 
-            var payload = numbersValues[0].split(' - ').map(Number);
+        var payload = numbersValues[0].split(' - ').map(Number);
 
-            fetch('/api/analyzeJumps', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(dataJumps => {
-                const infoSection = document.querySelector('.info-section');
-                infoSection.innerHTML = '';
-                if (Object.keys(dataJumps).length === 0) {
-                    infoSection.textContent = 'Não houveram pulos maiores ou iguais a 3.';
-                } else {
-                    for (const key in dataJumps) {
-                        if (dataJumps.hasOwnProperty(key)) {
-                            const div = document.createElement('div');
-                            div.textContent = `${dataJumps[key]} pulo(s) de ${key}`;
+<!--        const result = countNumbersInGroups(payload);-->
+<!--        document.getElementById("count1").textContent = result[0];-->
+<!--        document.getElementById("count2").textContent = result[1];-->
+<!--        document.getElementById("count3").textContent = result[2];-->
 
-                            infoSection.appendChild(div);
-                        }
+        fetch('/api/analyzeJumps', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(dataJumps => {
+            const infoSection = document.querySelector('.info-section');
+            infoSection.innerHTML = '';
+            if (Object.keys(dataJumps).length === 0) {
+                infoSection.textContent = 'Não houveram pulos maiores ou iguais a 3.';
+            } else {
+                for (const key in dataJumps) {
+                    if (dataJumps.hasOwnProperty(key)) {
+                        const div = document.createElement('div');
+                        div.textContent = `${dataJumps[key]} pulo(s) de ${key}`;
+
+                        infoSection.appendChild(div);
                     }
                 }
-                $('#loadingOverlay').css('display', 'block'); // To show
+            }
+            $('#loadingOverlay').css('display', 'block'); // To show
 
-                fetch('/api/analyze', {
-                     method: 'POST',
-                     headers: {
-                        'Content-Type': 'application/json',
-                     },
-                     body: JSON.stringify(payload),
-                    })
-                    .then(response => {
-                        $('#loadingOverlay').css('display', 'none'); // To hide
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Data: ' + data)
-                        const tableBody = document.querySelector('#betsTable tbody');
-                        data.forEach(betContainer => {
-                            console.log(betContainer)
-                            betContainer.bets.forEach(bet => {
-                                const row = document.createElement('tr');
-                                const idCell = document.createElement('td');
-                                idCell.textContent = betContainer.id;
-                                row.appendChild(idCell);
+            fetch('/api/analyze', {
+                 method: 'POST',
+                 headers: {
+                    'Content-Type': 'application/json',
+                 },
+                 body: JSON.stringify(payload),
+                })
+                .then(response => {
+                    $('#loadingOverlay').css('display', 'none'); // To hide
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data: ' + data)
+                    const tableBody = document.querySelector('#betsTable tbody');
+                    data.forEach(betContainer => {
+                        console.log(betContainer)
+                        betContainer.bets.forEach(bet => {
+                            const row = document.createElement('tr');
+                            const idCell = document.createElement('td');
+                            idCell.textContent = betContainer.id;
+                            row.appendChild(idCell);
 
-                                const numbersCell = document.createElement('td');
-                                // Modify this part to make numbers bold if they match winning numbers
-                                const numbersText = bet.numbers.map(number => {
-                                    console.log('payload: '+payload);
-                                    return payload.includes(number) ? `<b>${number}</b>` : number;
-                                }).join(' - ');
-                                numbersCell.innerHTML = numbersText; // Use innerHTML to render HTML tags
-                                row.appendChild(numbersCell);
+                            const numbersCell = document.createElement('td');
+                            // Modify this part to make numbers bold if they match winning numbers
+                            const numbersText = bet.numbers.map(number => {
+                                console.log('payload: '+payload);
+                                return payload.includes(number) ? `<b>${number}</b>` : number;
+                            }).join(' - ');
+                            numbersCell.innerHTML = numbersText; // Use innerHTML to render HTML tags
+                            row.appendChild(numbersCell);
 
-                                const correctGuesses = document.createElement('td');
-                                correctGuesses.textContent = betContainer.correctGuesses;
-                                row.appendChild(correctGuesses);
+                            const correctGuesses = document.createElement('td');
+                            correctGuesses.textContent = betContainer.correctGuesses;
+                            row.appendChild(correctGuesses);
 
-                                tableBody.appendChild(row);
-                            });
+                            tableBody.appendChild(row);
                         });
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
                     });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
                 });
             });
-    </script>
-    <style>
-        .loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            z-index: 1000;
-        }
+        });
+</script>
+<style>
+    .loading {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+        z-index: 1000;
+    }
 
-        .custom-spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border-left-color: #09f;
-            animation: spin 1s ease infinite;
-        }
+    .custom-spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border-left-color: #09f;
+        animation: spin 1s ease infinite;
+    }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .parent-container {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .counts-display {
+        width: auto; /* Adjust width as needed */
+        padding: 10px; /* Smaller padding for a smaller appearance */
+        margin-top: 20px; /* Space above the div */
+        background-color: #f0f0f0; /* Light background color */
+        border: 1px solid #e0e0e0; /* Subtle border */
+        border-radius: 5px; /* Rounded corners for a softer look */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        font-family: 'Arial', sans-serif; /* Modern font */
+        font-size: 20px; /* Smaller font size */
+        color: #333; /* Dark text for better contrast */
+        text-align: right; /* Align text to the right */
+    }
+
+    .hifen-display {
+        width: auto; /* Adjust width as needed */
+        padding: 10px; /* Smaller padding for a smaller appearance */
+        margin-top: 20px; /* Space above the div */
+        font-family: 'Arial', sans-serif; /* Modern font */
+        font-size: 20px; /* Smaller font size */
+        color: #333; /* Dark text for better contrast */
+        text-align: right; /* Align text to the right */
+    }
+
+
+</style>
 
 </body>
 </html>
