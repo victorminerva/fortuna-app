@@ -231,6 +231,7 @@
                 .then(data => {
                     console.log('Data: ' + data)
                     const tableBody = document.querySelector('#betsTable tbody');
+                    let paperData = {}; // Object to hold aggregated data for each paper
                     data.forEach(betContainer => {
                         console.log(betContainer)
                         betContainer.bets.forEach(bet => {
@@ -253,8 +254,41 @@
                             row.appendChild(correctGuesses);
 
                             tableBody.appendChild(row);
+
+                            // Aggregate data for each paper
+                            if (!paperData[betContainer.id]) {
+                                paperData[betContainer.id] = {
+                                    totalBets: 0,
+                                    totalCorrectGuesses: 0
+                                };
+                            }
+                            paperData[betContainer.id].totalBets += betContainer.bets.length;
+                            paperData[betContainer.id].totalCorrectGuesses += betContainer.correctGuesses;
                         });
                     });
+
+                    // Add summary rows for each paper
+                    for (const paperId in paperData) {
+                        if (paperData.hasOwnProperty(paperId)) {
+                            const summaryRow = document.createElement('tr');
+                            summaryRow.style.backgroundColor = "lightgray"; // Change the color here
+
+                            const idCell = document.createElement('td');
+                            idCell.textContent = '';
+                            summaryRow.appendChild(idCell);
+
+                            const noInfoCell = document.createElement('td');
+                            noInfoCell.textContent = '';
+                            summaryRow.appendChild(noInfoCell);
+
+                            const totalBetsCell = document.createElement('td');
+                            totalBetsCell.textContent = paperData[paperId].totalBets;
+                            summaryRow.appendChild(totalBetsCell);
+
+                            tableBody.appendChild(summaryRow);
+                        }
+                    }
+
                 })
                 .catch((error) => {
                     console.error('Error:', error);
