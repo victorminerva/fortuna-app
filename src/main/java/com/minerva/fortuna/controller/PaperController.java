@@ -1,5 +1,6 @@
 package com.minerva.fortuna.controller;
 
+import com.minerva.fortuna.domain.BetNumberDTO;
 import com.minerva.fortuna.domain.Paper;
 import com.minerva.fortuna.service.PaperService;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,11 @@ public class PaperController {
     @PostMapping
     public Paper createPaper(@RequestBody final Paper paper) {
         return service.create(paper);
+    }
+
+    @PutMapping
+    public Boolean updateBetNumbers(@RequestBody final BetNumberDTO dto) {
+        return service.updateBetNumbers(dto);
     }
 
     @DeleteMapping("/{id}")

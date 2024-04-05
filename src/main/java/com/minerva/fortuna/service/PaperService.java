@@ -1,5 +1,7 @@
 package com.minerva.fortuna.service;
 
+import com.minerva.fortuna.domain.Bet;
+import com.minerva.fortuna.domain.BetNumberDTO;
 import com.minerva.fortuna.domain.Paper;
 import com.minerva.fortuna.repository.PaperRepository;
 import org.springframework.cache.annotation.CacheEvict;
@@ -7,6 +9,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class PaperService {
@@ -25,6 +29,20 @@ public class PaperService {
     @CacheEvict(value = "PAPERS", allEntries=true)
     public Paper create(final Paper paper) {
         return repository.save(paper);
+    }
+
+    @CacheEvict(value = "PAPERS", allEntries=true)
+    public Boolean updateBetNumbers(final BetNumberDTO dto) {
+        Optional<Paper> byId = repository.findById(dto.getPaperId());
+        if (byId.isPresent()) {
+            Paper paper = byId.get();
+            paper.getBets().stream()
+                    .filter(bet -> bet.getId().equals(dto.getBetId()))
+                    .forEach(bet -> bet.setNumbers(dto.getNumbers()));
+
+            repository.save(paper);
+        }
+        return true;
     }
 
     @CacheEvict(value = "PAPERS", allEntries=true)
