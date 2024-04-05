@@ -90,9 +90,16 @@
                             var inputField = $('<input type="text" class="form-control" value="' + numbers.join(' - ') + '">');
                             inputContainer.append(inputField);
 
-                            // Optionally, add a save button to save the changes
-                            var saveButton = $('<button class="btn btn-success btn-sm">Save</button>');
+                            var saveIcon = $('<i class="fa fa-save"></i>');
+                            var saveButton = $('<button class="btn btn-success btn-sm float-right"></button>');
+                            saveButton.append(saveIcon);
+                            saveButton.css('margin-right', '10px');
                             inputContainer.append(saveButton);
+
+                            var cancelIcon = $('<i class="fa fa-times"></i>');
+                            var cancelButton = $('<button class="btn btn-secondary btn-sm float-right"></button>');
+                            cancelButton.append(cancelIcon);
+                            inputContainer.append(cancelButton);
 
                             // Attach a click event listener to the save button
                             saveButton.click(function() {
@@ -132,6 +139,21 @@
                                 var updatedPaddedNumbers = updatedNumbers.map(function(number) {
                                     return number.toString().padStart(2, '0');
                                 });
+
+                                // Create a new paragraph with the updated numbers and edit button
+                                var updatedBetParagraph = createBetParagraph(betIndex, bet, item, updatedPaddedNumbers);
+
+                                // Replace the current paragraph with the updated one
+                                betParagraph.replaceWith(updatedBetParagraph);
+                            });
+
+                            cancelButton.click(function() {
+                                var updatedPaddedNumbers = numbers.map(function(number) {
+                                    return number.toString().padStart(2, '0');
+                                });
+
+                                // Revert changes and replace the input field with the original paragraph content
+                                betParagraph.html(betParagraph.data('originalContent'));
 
                                 // Create a new paragraph with the updated numbers and edit button
                                 var updatedBetParagraph = createBetParagraph(betIndex, bet, item, updatedPaddedNumbers);
