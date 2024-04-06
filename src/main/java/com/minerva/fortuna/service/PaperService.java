@@ -49,4 +49,16 @@ public class PaperService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    public Boolean addBetNumbers(BetNumberDTO dto) {
+        Optional<Paper> byId = repository.findById(dto.getPaperId());
+        if (byId.isPresent()) {
+            Paper paper = byId.get();
+            Bet bet = new Bet();
+            bet.setNumbers(dto.getNumbers());
+            paper.getBets().add(bet);
+            repository.save(paper);
+        }
+        return true;
+    }
 }

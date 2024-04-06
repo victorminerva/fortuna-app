@@ -33,7 +33,24 @@
             <!-- Accordion items will be dynamically added here -->
         </div>
     </main>
-    <!-- Your existing loading overlay code -->
+    <div class="modal fade" id="addBetModal" tabindex="-1" role="dialog" aria-labelledby="addBetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addBetModalLabel">Nova Aposta</h5>
+                    <h2 class="modal-subtitle" id="addBetModalSubtitleLabel"></h2>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="paperId" id="paperId" value=""/>
+                    <input type="text" name="numbers" class="modalTextInput form-control" id="addBetInput" placeholder="01 - 02 - 03 - 04 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 12 - 13 - 14 - 15">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="addBet btn btn-primary">Adicionar</button>
+                    <button type="button" class="closeModal btn btn-secondary">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
     $(document).on('click', '.btn-link', function(e) {
@@ -53,6 +70,8 @@
                     var accordionItem = $('<div class="card"></div>');
                     var cardHeader = $('<div class="card-header" id="heading' + item.id + '"></div>');
                     var cardHeaderButton = $('<button class="btn btn-link" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Folha ' + item.id + '</button>');
+                    var addBetButton = $('<button class="btn btn-info btn-sm float-right add-bet-btn" data-id="' + item.id + '">Adicionar Aposta</button>');
+                    addBetButton.css('margin-right', '10px');
                     var deleteButton = $('<button class="btn btn-danger btn-sm float-right delete-btn" data-id="' + item.id + '">Delete</button>');
                     var cardBody = $('<div id="collapse' + item.id + '" class="collapse" aria-labelledby="heading' + item.id + '" data-parent="#accordion"></div>');
                     var cardBodyContent = $('<div class="card-body"></div>');
@@ -165,14 +184,10 @@
                             // Replace the paragraph content with the input container
                             betParagraph.empty().append(inputContainer);
                         });
-
                         return betParagraph;
                     }
-
-
-
                     cardBody.append(cardBodyContent);
-                    cardHeader.append(cardHeaderButton, deleteButton);
+                    cardHeader.append(cardHeaderButton, deleteButton, addBetButton);
                     accordionItem.append(cardHeader, cardBody);
                     accordionContainer.append(accordionItem);
                 });
@@ -191,22 +206,58 @@
                                 'Content-Type': 'application/json'
                             }
                         })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Network response was not ok');
-                                }
-                                // Assuming the server responds with a success message or status code
-                                console.log('Item deleted successfully');
-                                // Remove the deleted item from the UI
-                                $('#heading' + itemId).parent().remove();
-                            })
-                            .catch(error => {
-                                console.error('Error deleting item:', error);
-                            });
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            // Assuming the server responds with a success message or status code
+                            console.log('Item deleted successfully');
+                            // Remove the deleted item from the UI
+                            $('#heading' + itemId).parent().remove();
+                        })
+                        .catch(error => {
+                            console.error('Error deleting item:', error);
+                        });
                     }else {
                         return false;
                     }
                 });
+
+                $('.add-bet-btn').click(function() {
+                    var itemId = $(this).data('id');
+                    var paperData = "Folha " + itemId;
+
+                    $('#addBetModal #paperId').val(itemId);
+
+                    // Populate the modal with the item's data
+                    $('#addBetModal .modal-subtitle').text(paperData);
+
+                    // Show the modal
+                    $('#addBetModal').modal('show');
+                });
+
+                $('.addBet').click(function() {
+                    var paperIdValue = $('#addBetModal #paperId').val();
+                    console.log(paperIdValue);
+
+                    var updatedData = $('#addBetModal .modalTextInput').val();
+                    console.log(updatedData);
+
+                    $('#addBetModal').modal('hide');
+
+                    let jsonObject = {
+                        "paperId": paperIdValue,
+                        "numbers": updatedData
+                    };
+
+                    var target = '#collapse' + paperIdValue;
+                    $(target).collapse('show');
+
+                });
+
+                 $('.closeModal').click(function() {
+                    $('#addBetModal').modal('hide');
+                 });
             })
             .catch(error => console.error('Error fetching data:', error));
     });

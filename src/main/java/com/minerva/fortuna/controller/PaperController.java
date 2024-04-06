@@ -27,6 +27,11 @@ public class PaperController {
         return service.create(paper);
     }
 
+    @PostMapping("/addBet")
+    public Boolean addBetNumbers(@RequestBody final BetNumberDTO dto) {
+        return service.addBetNumbers(dto);
+    }
+
     @PutMapping
     public Boolean updateBetNumbers(@RequestBody final BetNumberDTO dto) {
         return service.updateBetNumbers(dto);
