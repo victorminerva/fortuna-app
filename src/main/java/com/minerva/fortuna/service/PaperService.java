@@ -50,6 +50,7 @@ public class PaperService {
         repository.deleteById(id);
     }
 
+    @CacheEvict(value = "PAPERS", allEntries=true)
     public Boolean addBetNumbers(BetNumberDTO dto) {
         Optional<Paper> byId = repository.findById(dto.getPaperId());
         if (byId.isPresent()) {
