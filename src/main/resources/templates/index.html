@@ -232,6 +232,8 @@
                     console.log('Data: ' + data)
                     const tableBody = document.querySelector('#betsTable tbody');
                     let paperData = {}; // Object to hold aggregated data for each paper
+                    let lastRowForPaper = {}; // Object to hold the last row element for each paper
+
                     data.forEach(betContainer => {
                         console.log(betContainer)
                         betContainer.bets.forEach(bet => {
@@ -253,7 +255,12 @@
                             correctGuesses.textContent = betContainer.correctGuesses;
                             row.appendChild(correctGuesses);
 
+                             // Append the row to the table body
+                            const tableBody = document.querySelector('#betsTable tbody');
                             tableBody.appendChild(row);
+
+                            // Update the last row for this paper
+                            lastRowForPaper[betContainer.id] = row;
 
                             // Aggregate data for each paper
                             if (!paperData[betContainer.id]) {
@@ -267,7 +274,7 @@
                         });
                     });
 
-                    // Add summary rows for each paper
+                    // After processing all bets, insert summary rows immediately after the last bet row for each paper
                     for (const paperId in paperData) {
                         if (paperData.hasOwnProperty(paperId)) {
                             const summaryRow = document.createElement('tr');
@@ -285,7 +292,9 @@
                             totalBetsCell.textContent = paperData[paperId].totalBets;
                             summaryRow.appendChild(totalBetsCell);
 
-                            tableBody.appendChild(summaryRow);
+                            // Insert the summary row immediately after the last bet row for this paper
+                            const tableBody = document.querySelector('#betsTable tbody');
+                            tableBody.insertBefore(summaryRow, lastRowForPaper[paperId].nextSibling);
                         }
                     }
 
