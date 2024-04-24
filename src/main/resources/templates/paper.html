@@ -46,6 +46,20 @@
 
     <script>
         $(document).ready(function() {
+            // Check for stored inputs and restore them
+            var storedInputs = localStorage.getItem('inputs');
+            if (storedInputs) {
+                var inputs = JSON.parse(storedInputs);
+                inputs.forEach(function(inputValue) {
+                    var newInput = '<div class="input-group mb-3">' +
+                                   '<input type="text" name="numbers" class="form-control" id="winningNumbersPaper" value="' + inputValue + '">' +
+                                   '<div class="input-group-append">' +
+                                   '<button class="btn btn-danger delete-input" type="button">-</button>' +
+                                   '</div>' +
+                                   '</div>';
+                    $('#inputsContainer').append(newInput);
+                });
+            }
              $('#addInput').click(function() {
                 var newInput = '<div class="input-group mb-3">' +
                                '<input type="text" name="numbers" class="form-control" id="winningNumbersPaper" placeholder="01 - 02 - 03 - 04 - 05 - 06 - 07 - 08 - 09 - 10 - 11 - 12 - 13 - 14 - 15">' +
@@ -54,6 +68,12 @@
                                '</div>' +
                                '</div>';
                 $('#inputsContainer').append(newInput);
+
+                // Serialize current inputs and store in localStorage
+                var inputs = $('#inputsContainer input[type="text"]').map(function() {
+                    return $(this).val();
+                }).get();
+                localStorage.setItem('inputs', JSON.stringify(inputs));
             });
 
             $(document).on('click', '.delete-input', function() {
@@ -116,6 +136,7 @@
                         if (response.ok) {
                             $('#successMessage').show().fadeOut(8000);
                             $('#submitForm')[0].reset();
+                            localStorage.clear();
                         } else {
                             $('#errorMessage').text(data.errorMessage || 'An error occurred').show().fadeOut(5000);
                         }
