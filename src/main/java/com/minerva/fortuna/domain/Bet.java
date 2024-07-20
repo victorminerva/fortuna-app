@@ -11,7 +11,7 @@ public class Bet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ElementCollection
+    @Column(columnDefinition = "integer[]")
     private List<Integer> numbers;
 
     public Integer getId() {

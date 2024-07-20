@@ -23,7 +23,7 @@
     <div id="errorMessage" class="alert alert-danger" style="display: none;">
         Um erro ocorreu ao tentar atualizar a folha.
     </div>
-    <div id="loadingOverlay" class="loading" style="display: none;">
+    <div id="loadingOverlay" class="overlay" style="display: none;">
         <div class="custom-spinner"></div>
     </div>
 
@@ -79,8 +79,6 @@
         fetch('/api/papers')
             .then(response => response.json())
             .then(data => {
-                $('#loadingOverlay').hide();
-
                 var accordionContainer = $('#accordion');
                 $.each(data, function(index, item) {
                     var accordionItem = $('<div class="card"></div>');
@@ -163,7 +161,7 @@
                                         if (response.ok) {
                                             $('#successMessage').show().fadeOut(8000);
                                         } else {
-                                            $('#errorMessage').text(data.errorMessage || 'An error occurred').show().fadeOut(5000);
+                                            $('#errorMessage').text(response.errorMessage || 'An error occurred').show().fadeOut(5000);
                                         }
                                     })
                                     .catch((error) => {
@@ -267,6 +265,9 @@
                         "numbers": numbers
                     };
 
+                    // Show the loading overlay before starting the fetch
+                    $('#loadingOverlay').css('display', 'flex');
+
                     fetch('/api/papers/addBet', {
                          method: 'POST',
                          headers: {
@@ -275,21 +276,16 @@
                          body: JSON.stringify(jsonObject),
                         })
                         .then(response => {
-                            $('#loadingOverlay').css('display', 'none'); // To hide
-
                             if (response.ok) {
+                                location.reload();
                                 $('#successMessage').show().fadeOut(8000);
-                                $('#submitForm')[0].reset();
                             } else {
-                                $('#errorMessage').text(data.errorMessage || 'An error occurred').show().fadeOut(5000);
+                                $('#errorMessage').text(response.errorMessage || 'An error occurred').show().fadeOut(5000);
                             }
                         })
                     .catch((error) => {
                         console.error('Error:', error);
-
-                        $('#loadingOverlay').hide();
-
-                        $('#errorMessage').text('An error occurred while submitting your data.').show().fadeOut(8000);
+                        $('#errorMessage').text('An error occurred while submitting your data.').show();
                     });
 
                     var target = '#collapse' + paperIdValue;
@@ -316,6 +312,33 @@
         margin-right: 10px; /* Add some space between the input field and the button */
     }
 
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Optional: Adds a semi-transparent background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        z-index: 9999; /* Increased z-index to ensure it's above most other elements */
+    }
+
+    .custom-spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border-left-color: #09f;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 
     .hr-separator {
         margin-top: 10px;

@@ -27,6 +27,11 @@ public class PaperController {
         return service.create(paper);
     }
 
+    @PatchMapping
+    public List<Paper> patch(@RequestBody final List<Paper> papers) {
+        return service.patch(papers);
+    }
+
     @PostMapping("/addBet")
     public Boolean addBetNumbers(@RequestBody final BetNumberDTO dto) {
         return service.addBetNumbers(dto);

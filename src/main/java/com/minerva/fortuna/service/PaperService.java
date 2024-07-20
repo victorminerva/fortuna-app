@@ -9,7 +9,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -29,6 +28,11 @@ public class PaperService {
     @CacheEvict(value = "PAPERS", allEntries=true)
     public Paper create(final Paper paper) {
         return repository.save(paper);
+    }
+
+    @CacheEvict(value = "PAPERS", allEntries=true)
+    public List<Paper> patch(final List<Paper> papers) {
+        return repository.saveAllAndFlush(papers);
     }
 
     @CacheEvict(value = "PAPERS", allEntries=true)

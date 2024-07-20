@@ -14,7 +14,7 @@
         <h1 class="text-left">Folha</h1>
     </header>
 
-    <div id="loadingOverlay" class="loading" style="display: none;">
+    <div id="loadingOverlay" class="overlay" style="display: none;">
         <div class="custom-spinner"></div>
     </div>
 
@@ -26,7 +26,6 @@
         <div id="errorMessage" class="alert alert-danger" style="display: none;">
             Um erro ocorreu ao tentar cadastrar a folha.
         </div>
-
         <div id="inputsContainer">
             <!-- Initial input field -->
             <div class="input-group mb-3">
@@ -38,7 +37,7 @@
         </div>
         <button type="button" id="addInput" class="btn btn-primary">+</button>
         <div class="text-right">
-            <a href="/" class="btn btn-secondary">Cancelar</a>
+            <a href="/" class="btn btn-secondary">Voltar</a>
 
             <button type="button" id="submitBtn" class="btn btn-primary">Salvar</button>
         </div>
@@ -110,7 +109,7 @@
                     return;
                 }
 
-                $('#loadingOverlay').css('display', 'block'); // To show
+                $('#loadingOverlay').css('display', 'flex'); // To show
 
                 var formData = $('#submitForm').serialize();
                 const params = new URLSearchParams(formData);
@@ -134,8 +133,9 @@
                         $('#loadingOverlay').css('display', 'none'); // To hide
 
                         if (response.ok) {
+                            location.reload();
                             $('#successMessage').show().fadeOut(8000);
-                            $('#submitForm')[0].reset();
+
                             localStorage.clear();
                         } else {
                             $('#errorMessage').text(data.errorMessage || 'An error occurred').show().fadeOut(5000);
@@ -152,14 +152,18 @@
         });
     </script>
     <style>
-
-        .loading {
+        .overlay {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Optional: Adds a semi-transparent background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            z-index: 9999; /* Increased z-index to ensure it's above most other elements */
         }
 
         .custom-spinner {
@@ -168,7 +172,7 @@
             height: 36px;
             border-radius: 50%;
             border-left-color: #09f;
-            animation: spin 1s ease infinite;
+            animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
