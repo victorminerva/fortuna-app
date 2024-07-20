@@ -12,6 +12,7 @@ public class Paper {
     private Integer id;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     private List<Bet> bets;
 
     @Transient
