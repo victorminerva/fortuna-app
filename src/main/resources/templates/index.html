@@ -62,6 +62,41 @@
               align-items: center;
             }
          }
+
+        .color-legend {
+            display: flex;
+    align-items: center; /* Aligns children vertically in the center */
+    margin-bottom: 5px; /* Adds spacing between legend entries */
+        }
+
+        .green15-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #4ecca3; /* Matches the green used for highlighting */
+            margin-right: 5px;
+            margin-left: 10px;
+        }
+
+        .green14-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #83afa6; /* Matches the green used for highlighting */
+            margin-right: 5px;
+            margin-left: 10px;
+        }
+
+        .no-color-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #000; /* Black border to indicate presence without color */
+            margin-right: 5px;
+            margin-left: 10px;
+        }
+
+
     </style>
 </head>
 <body>
@@ -121,6 +156,12 @@
 
     </div>
 
+    <div class="color-legend">
+        <span class="green15-box"></span><span>15 Acertos</span>
+        <span class="green14-box"></span><span>14 Acertos</span>
+        <span class="no-color-box"></span><span>13 Acertos ou menos</span>
+    </div>
+
     <div>
         <table id="betsTable" class="table">
             <thead>
@@ -134,6 +175,9 @@
             </tbody>
         </table>
     </div>
+
+
+
 </div>
 
 <script>
@@ -229,13 +273,11 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Data: ' + data)
                     const tableBody = document.querySelector('#betsTable tbody');
                     let paperData = {}; // Object to hold aggregated data for each paper
                     let lastRowForPaper = {}; // Object to hold the last row element for each paper
 
                     data.forEach(betContainer => {
-                        console.log(betContainer)
                         betContainer.bets.forEach(bet => {
                             const row = document.createElement('tr');
                             const idCell = document.createElement('td');
@@ -245,7 +287,6 @@
                             const numbersCell = document.createElement('td');
                             // Modify this part to make numbers bold if they match winning numbers
                             const numbersText = bet.numbers.map(number => {
-                                console.log('payload: '+payload);
                                 return payload.includes(number) ? `<b>${number}</b>` : number;
                             }).join(' - ');
                             numbersCell.innerHTML = numbersText; // Use innerHTML to render HTML tags
@@ -254,6 +295,13 @@
                             const correctGuesses = document.createElement('td');
                             correctGuesses.textContent = betContainer.correctGuesses;
                             row.appendChild(correctGuesses);
+
+                            // Check if correctGuesses equals 15 and add the green-row class
+                            if (betContainer.correctGuesses === 14) {
+                                row.style.backgroundColor = "#83afa6";
+                            } else if (betContainer.correctGuesses === 15) {
+                                row.style.backgroundColor = "#4ecca3";
+                            }
 
                              // Append the row to the table body
                             const tableBody = document.querySelector('#betsTable tbody');
