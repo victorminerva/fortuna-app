@@ -3,7 +3,9 @@ package com.minerva.fortuna.service;
 import com.minerva.fortuna.domain.Bet;
 import com.minerva.fortuna.domain.BetNumberDTO;
 import com.minerva.fortuna.domain.Paper;
+import com.minerva.fortuna.repository.BetRepository;
 import com.minerva.fortuna.repository.PaperRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -15,16 +17,20 @@ import java.util.Optional;
 public class PaperService {
 
     private final PaperRepository repository;
+    private final BetRepository betRepository;
 
-    public PaperService(PaperRepository repository) {
+    public PaperService(PaperRepository repository, BetRepository betRepository) {
         this.repository = repository;
+        this.betRepository = betRepository;
     }
 
+    @Transactional
     @Cacheable("PAPERS")
     public List<Paper> findAll() {
         return repository.findAll();
     }
 
+    @Transactional
     @CacheEvict(value = "PAPERS", allEntries=true)
     public Paper create(final Paper paper) {
         return repository.save(paper);
@@ -49,6 +55,7 @@ public class PaperService {
         return true;
     }
 
+    @Transactional
     @CacheEvict(value = "PAPERS", allEntries=true)
     public void delete(Long id) {
         repository.deleteById(id);
@@ -66,4 +73,12 @@ public class PaperService {
         }
         return true;
     }
+
+    @Transactional
+    @CacheEvict(value = "PAPERS", allEntries=true)
+    public void deleteBetFromPaper(Long id) {
+        repository.deleteBetFromPaper(id);
+        betRepository.deleteById(id);
+    }
+
 }

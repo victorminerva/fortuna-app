@@ -3,6 +3,7 @@ package com.minerva.fortuna.controller;
 import com.minerva.fortuna.domain.BetNumberDTO;
 import com.minerva.fortuna.domain.Paper;
 import com.minerva.fortuna.service.PaperService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,4 +48,11 @@ public class PaperController {
         service.delete(id);
         return "redirect:/paper-list"; // Redirect to a page showing all papers
     }
+
+    @DeleteMapping("/bets/{betId}")
+    public ResponseEntity<Void> deleteBet(@PathVariable("betId") Long betId) {
+        service.deleteBetFromPaper(betId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
