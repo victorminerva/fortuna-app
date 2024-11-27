@@ -2,7 +2,9 @@ package com.minerva.fortuna.domain;
 
 import jakarta.persistence.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Bet {
@@ -28,5 +30,19 @@ public class Bet {
 
     public void setNumbers(List<Integer> numbers) {
         this.numbers = numbers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Bet)) return false;
+        Bet bet = (Bet) o;
+        return Objects.equals(id, bet.id) &&
+                Arrays.equals(numbers.toArray(), bet.numbers.toArray());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, numbers);
     }
 }

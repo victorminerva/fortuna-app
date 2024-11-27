@@ -3,6 +3,7 @@ package com.minerva.fortuna.domain;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "PAPER")
 public class Paper {
@@ -40,5 +41,22 @@ public class Paper {
 
     public void setCorrectGuesses(Integer correctGuesses) {
         this.correctGuesses = correctGuesses;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Paper)) return false;
+        Paper paper = (Paper) o;
+        return Objects.equals(id, paper.id) &&
+                bets.size() == paper.bets.size() &&
+                bets.containsAll(paper.bets);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (bets != null ? bets.hashCode() : 0);
+        return result;
     }
 }
