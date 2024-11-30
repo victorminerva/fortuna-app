@@ -1,14 +1,8 @@
 package com.minerva.fortuna;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.minerva.fortuna.domain.Bet;
-import com.minerva.fortuna.domain.Paper;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 class FortunaApplicationTests {

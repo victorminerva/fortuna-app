@@ -1,6 +1,5 @@
 package com.minerva.fortuna.service;
 
-import com.minerva.fortuna.domain.Bet;
 import com.minerva.fortuna.domain.Paper;
 import org.springframework.stereotype.Service;
 
